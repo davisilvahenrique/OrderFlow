@@ -7,16 +7,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="FluentValidation.AspNetCore" Version="11.3.1" />
-    <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="9.0.10" />
-    <PackageReference Include="Serilog.AspNetCore" Version="10.0.0" />
-    <PackageReference Include="Serilog.Sinks.Console" Version="6.1.1" />
-    <PackageReference Include="Swashbuckle.AspNetCore" Version="10.1.5" />
+    <ProjectReference Include="..\OrderFlow.Application\OrderFlow.Application.csproj" />
+    <ProjectReference Include="..\OrderFlow.Infrastructure\OrderFlow.Infrastructure.csproj" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\OrderFlow.Application\OrderFlow.Application.csproj" />
-    <ProjectReference Include="..\OrderFlow.Infrastructure\OrderFlow.Infrastructure.csproj" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="10.1.5" />
   </ItemGroup>
 
 </Project>

@@ -18,6 +18,12 @@ public class Order
 
     public Order(string customerName, string customerEmail)
     {
+        if (string.IsNullOrWhiteSpace(customerName))
+            throw new ArgumentException("O nome do cliente é obrigatório.");
+
+        if (string.IsNullOrWhiteSpace(customerEmail))
+            throw new ArgumentException("O email do cliente é obrigatório.");
+
         CustomerName = customerName;
         CustomerEmail = customerEmail;
         Status = OrderStatus.Created;
