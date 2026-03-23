@@ -2,6 +2,9 @@ using OrderFlow.API.Contracts.Requests;
 using OrderFlow.Application.Commands.AddOrderItem;
 using OrderFlow.Application.Commands.CreateOrder;
 using OrderFlow.Application.Queries.GetOrderById;
+using OrderFlow.Application.Commands.CancelOrder;
+using OrderFlow.Application.Commands.MarkOrderAsPaid;
+using OrderFlow.Application.Commands.MarkOrderAsShipped;
 using Microsoft.AspNetCore.Mvc;
 
 namespace OrderFlow.API.Controllers;
@@ -74,5 +77,47 @@ public class OrdersController : ControllerBase
         {
             return BadRequest(new { message = ex.Message });
         }
+    }
+
+    [HttpPatch("{id:guid}/pay")]
+    public async Task<IActionResult> Pay(
+        Guid id,
+        [FromServices] MarkOrderAsPaidCommandHandler handler,
+        CancellationToken cancellationToken)
+    {
+        var result = await handler.Handle(new MarkOrderAsPaidCommand(id), cancellationToken);
+
+        if (result is null)
+            return NotFound();
+
+        return Ok(result);
+    }
+
+    [HttpPatch("{id:guid}/ship")]
+    public async Task<IActionResult> Ship(
+        Guid id,
+        [FromServices] MarkOrderAsShippedCommandHandler handler,
+        CancellationToken cancellationToken)
+    {
+        var result = await handler.Handle(new MarkOrderAsShippedCommand(id), cancellationToken);
+
+        if (result is null)
+            return NotFound();
+
+        return Ok(result);
+    }
+
+    [HttpPatch("{id:guid}/cancel")]
+    public async Task<IActionResult> Cancel(
+        Guid id,
+        [FromServices] CancelOrderCommandHandler handler,
+        CancellationToken cancellationToken)
+    {
+        var result = await handler.Handle(new CancelOrderCommand(id), cancellationToken);
+
+        if (result is null)
+            return NotFound();
+
+        return Ok(result);
     }
 }

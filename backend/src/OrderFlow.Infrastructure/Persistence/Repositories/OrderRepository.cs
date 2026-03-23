@@ -1,31 +1,42 @@
+using Microsoft.EntityFrameworkCore;
 using OrderFlow.Application.Interfaces;
 using OrderFlow.Domain.Entities;
+using OrderFlow.Infrastructure.Persistence.Context;
 
 namespace OrderFlow.Infrastructure.Persistence.Repositories;
 
 public class OrderRepository : IOrderRepository
 {
-    private static readonly List<Order> Orders = new();
+    private readonly OrderFlowDbContext _context;
 
-    public Task AddAsync(Order order, CancellationToken cancellationToken = default)
+    public OrderRepository(OrderFlowDbContext context)
     {
-        Orders.Add(order);
-        return Task.CompletedTask;
+        _context = context;
     }
 
-    public Task<Order?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
+    public async Task AddAsync(Order order, CancellationToken cancellationToken = default)
     {
-        var order = Orders.FirstOrDefault(o => o.Id == id);
-        return Task.FromResult(order);
+        await _context.Orders.AddAsync(order, cancellationToken);
+        await _context.SaveChangesAsync(cancellationToken);
     }
 
-    public Task<List<Order>> GetAllAsync(CancellationToken cancellationToken = default)
+    public async Task<Order?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
     {
-        return Task.FromResult(Orders.ToList());
+        return await _context.Orders
+            .Include(o => o.Items)
+            .FirstOrDefaultAsync(o => o.Id == id, cancellationToken);
     }
 
-    public Task UpdateAsync(Order order, CancellationToken cancellationToken = default)
+    public async Task<List<Order>> GetAllAsync(CancellationToken cancellationToken = default)
     {
-        return Task.CompletedTask;
+        return await _context.Orders
+            .Include(o => o.Items)
+            .ToListAsync(cancellationToken);
+    }
+
+    public async Task UpdateAsync(Order order, CancellationToken cancellationToken = default)
+    {
+        _context.Orders.Update(order);
+        await _context.SaveChangesAsync(cancellationToken);
     }
 }
